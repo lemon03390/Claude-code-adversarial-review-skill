@@ -6,7 +6,7 @@ description: >
   "find holes", "critique this", "break this", "stress test", "poke holes",
   "what's wrong with this", "find weaknesses", "challenge this".
 metadata:
-  version: "1.2"
+  version: "1.2.1"
   sources:
     - richiethomas/claude-devils-advocate (debate mechanic)
     - posit-dev/skills/critical-code-reviewer (detection patterns, severity tiers)
@@ -217,7 +217,11 @@ Reserve >= 1 round for lower-priority topics. Flag any skipped topics in the sum
 
 ### A.5 — Fix-First (Auto-Fix)
 
-**Guard:** If user's request implies read-only review ("critique", "find holes", "what's wrong"), list fixes as recommendations instead of applying them. Only auto-fix when the user explicitly asked for a review that implies fixing (e.g., "review and fix", "clean this up").
+**Guard:** Default is read-only (no auto-fix). Auto-fix is enabled ONLY when:
+- `$ARGUMENTS` contains `--fix`, OR
+- User's request explicitly implies fixing (e.g., "review and fix", "clean this up")
+
+If user's request implies read-only review ("critique", "find holes", "what's wrong") and no `--fix` flag, list fixes as recommendations only.
 
 **Auto-fixable** (unambiguous, mechanical):
 - Missing `await`, empty `catch {}` -> add proper error handling, `==` -> `===`, `!= NULL` -> `IS DISTINCT FROM`, unused imports, obvious typos
