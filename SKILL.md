@@ -128,10 +128,12 @@ Every finding MUST include a confidence score:
 
 | Score | Action |
 |-------|--------|
-| 9-10 | Surface — certain bug, can demonstrate failure |
-| 7-8 | Surface with evidence — very likely issue |
+| 9-10 | Surface — high-confidence, likely demonstrable |
+| 7-8 | Surface with evidence — probable issue |
 | 4-6 | Suppress to "Low-confidence appendix" only |
 | 1-3 | Discard entirely |
+
+> Confidence scores are heuristic rankings, not statistical probabilities. They force the model to commit to a priority order rather than presenting all findings at equal weight.
 
 Format: `[CONFIDENCE: 8/10] Missing await on deleteUser() — fire-and-forget will silently fail`
 
@@ -275,7 +277,7 @@ Attack each claim from 6 perspectives:
 | **Cost Analyst** | "Hidden operational cost?" |
 | **Devil's Advocate** | "What if the opposite approach is better?" |
 
-Each finding: attach confidence score + severity (Fatal / Serious / Minor).
+Each finding: attach confidence score + severity (Blocking / Required / Suggestion — same tiers as Phase A).
 
 ### B.3 — Steelman & Counter-Argument
 

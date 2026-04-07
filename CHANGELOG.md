@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.2.1 (2026-04-07)
+
+**Self-review fixes — the skill reviewed itself and found real issues.**
+
+- Fixed: README URLs pointed to `anthropics/` instead of actual repo (would 404)
+- Fixed: install.sh lacked `cd "$(dirname "$0")"` guard — broke when run from other directories
+- Fixed: install.sh had no file existence checks
+- Fixed: Line count claims (said 203, actual ~300 with prerequisite extensions)
+- Fixed: Phase B used different severity terms (Fatal/Serious/Minor) vs Phase A (Blocking/Required/Suggestion) — unified
+- Fixed: Confidence tier said "certain bug" — softened to "high-confidence, likely demonstrable" with heuristic disclaimer
+- Fixed: posit-dev source name inconsistent between SKILL.md and README
+- Improved: Command file expanded with argument examples and default mode documentation
+- Improved: Token estimates marked as rough/untested
+
 ## v1.2 (2026-04-07)
 
 **Simplification pass — 47% reduction, zero functional loss.**
@@ -12,7 +26,7 @@
 - Removed redundant credits block (already in frontmatter)
 - Compressed philosophy section from 27 lines to 5-line core principles
 - Added Prerequisites section with framework extension blocks
-- 385 lines -> 203 lines
+- 385 lines -> ~200 lines (core), ~300 lines with framework extensions
 
 ## v1.1 (2026-04-07)
 

@@ -1,6 +1,6 @@
 # Adversarial Review — Claude Code Skill
 
-A battle-tested adversarial code and architecture review skill for [Claude Code](https://docs.anthropic.com/en/docs/claude-code). Forces genuine critical analysis through structured debate, confidence-scored findings, and multi-perspective attack — designed to break through LLM sycophancy.
+An adversarial code and architecture review skill for [Claude Code](https://docs.anthropic.com/en/docs/claude-code), evolved through three iterations of self-review. Forces genuine critical analysis through structured debate, confidence-scored findings, and multi-perspective attack — designed to break through LLM sycophancy.
 
 ## Why This Exists
 
@@ -33,27 +33,27 @@ LLMs default to agreeable, surface-level code reviews. This skill forces Claude 
 # Clone to Claude Code global skills directory
 mkdir -p ~/.claude/skills/adversarial-review
 curl -o ~/.claude/skills/adversarial-review/SKILL.md \
-  https://raw.githubusercontent.com/anthropics/adversarial-review-skill/main/SKILL.md
+  https://raw.githubusercontent.com/lemon03390/Claude-code-adversarial-review-skill/main/SKILL.md
 
 # Optional: Add slash command
 mkdir -p ~/.claude/commands
 curl -o ~/.claude/commands/adversarial-review.md \
-  https://raw.githubusercontent.com/anthropics/adversarial-review-skill/main/commands/adversarial-review.md
+  https://raw.githubusercontent.com/lemon03390/Claude-code-adversarial-review-skill/main/commands/adversarial-review.md
 ```
 
 ### Manual Install
 
 ```bash
-git clone https://github.com/anthropics/adversarial-review-skill.git
-cp adversarial-review-skill/SKILL.md ~/.claude/skills/adversarial-review/SKILL.md
-cp adversarial-review-skill/commands/adversarial-review.md ~/.claude/commands/adversarial-review.md
+git clone https://github.com/lemon03390/Claude-code-adversarial-review-skill.git
+cp Claude-code-adversarial-review-skill/SKILL.md ~/.claude/skills/adversarial-review/SKILL.md
+cp Claude-code-adversarial-review-skill/commands/adversarial-review.md ~/.claude/commands/adversarial-review.md
 ```
 
 ### Install Script
 
 ```bash
-git clone https://github.com/anthropics/adversarial-review-skill.git
-cd adversarial-review-skill
+git clone https://github.com/lemon03390/Claude-code-adversarial-review-skill.git
+cd Claude-code-adversarial-review-skill
 ./install.sh
 ```
 
@@ -152,7 +152,7 @@ Project-level overrides take precedence over the global skill.
 ```
 A.1 Scope         → git diff main...HEAD
 A.2 Critical Scan → Silent pattern scan, auto-blockers (confidence >= 7)
-A.3 Specialists   → 4 parallel subagents (Security/Perf/Test/Error) [>= 100 lines]
+A.3 Specialists   → 4 specialist perspectives (Security/Perf/Test/Error) [>= 100 lines]
 A.4 Debate        → Author vs Reviewer, N rounds, forced disagreement
 A.5 Fix-First     → Auto-fix mechanical issues, flag decisions
 A.6 Summary       → PR Quality Score + structured report
@@ -176,14 +176,16 @@ B.4 Verdict       → Rethink / Revise / Proceed
 | Multi-perspective attack | [RedTeam](https://github.com/danielmiessler/Personal_AI_Infrastructure) | 6 adversarial viewpoints simultaneously |
 | Detection patterns | [critical-code-reviewer](https://github.com/posit-dev/positron) | Language-specific red flags, not vibes |
 
-## Token Consumption
+## Token Consumption (Rough Estimates)
+
+These are rough estimates based on internal testing, not formal benchmarks. Actual consumption varies with diff complexity, model version, and number of findings.
 
 | Scenario | Estimated Tokens |
 |----------|-----------------|
-| Small diff (< 100 lines), 5 rounds | ~15-20K |
-| Medium diff (100-500 lines), 5 rounds + specialists | ~25-35K |
-| Large diff (500+ lines), 8 rounds + specialists | ~40-50K |
-| Architecture review (medium proposal) | ~20-30K |
+| Small diff (< 100 lines), 5 rounds | ~15-25K |
+| Medium diff (100-500 lines), 5 rounds + specialists | ~25-40K |
+| Large diff (500+ lines), 8 rounds + specialists | ~40-55K |
+| Architecture review (medium proposal) | ~20-35K |
 
 vs. plain "review my code" prompt: ~3-8K (but lower quality, no structure, no anti-sycophancy)
 
@@ -193,7 +195,8 @@ vs. plain "review my code" prompt: ~3-8K (but lower quality, no structure, no an
 |---------|-------|---------|
 | v1.0 | 266 | Debate + Architecture Attack |
 | v1.1 | 385 | + Confidence scoring, specialist dispatch, auto-fix, PR Score |
-| v1.2 | 203 | /simplify: -47% lines, zero functional loss |
+| v1.2 | ~200 (core) | /simplify: -47% core lines, zero functional loss |
+| v1.2 + extensions | ~300 | + Framework prerequisite blocks (React, Django, Rails, Supabase, Next.js) |
 
 See [CHANGELOG.md](./CHANGELOG.md) for details.
 
@@ -212,6 +215,6 @@ PRs welcome! Especially:
 
 Built by synthesizing the best ideas from:
 - [richiethomas/claude-devils-advocate](https://github.com/richiethomas/claude-devils-advocate) — debate mechanic
-- [posit-dev/positron](https://github.com/posit-dev/positron) — detection patterns, severity tiers
+- [posit-dev/positron (critical-code-reviewer skill)](https://github.com/posit-dev/positron) — detection patterns, severity tiers
 - [danielmiessler/Personal_AI_Infrastructure](https://github.com/danielmiessler/Personal_AI_Infrastructure) — multi-perspective attack
 - [garrytan/gstack](https://github.com/garrytan/gstack) — specialist dispatch, confidence scoring, fix-first
