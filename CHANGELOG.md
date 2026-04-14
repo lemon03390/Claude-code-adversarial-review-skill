@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.3 (2026-04-14)
+
+**Compounding learnings — the skill now consults prior knowledge before reviewing.**
+
+Previously the skill reviewed each diff from scratch, ignoring patterns it had already learned in earlier sessions. Usage analysis across 36 real invocations showed zero reads of user-maintained knowledge stores, so findings never compounded.
+
+- Added **A.0 Consult Prior Learnings** — optional pre-step that reads `~/.claude/error-tracker.json`, `~/.claude/knowledge-base/index.md`, and `<project>/.claude/plpgsql-graph-report.md` when present. Outputs a "Prior Learnings Applied" preamble before A.1.
+- Added **A.7 Flywheel Feedback** — post-step that lists new blocker patterns vs. patterns already in the knowledge store, so users can decide whether to archive. Skipped silently if A.0 found nothing.
+- Added core principle #5: "Compound prior learnings" — reinforces the flywheel pattern.
+- Findings that match a loaded pattern get **+1 confidence** and auto-promote to **Blocking** severity, with citation (e.g. `[matches error-tracker pattern #3]`).
+- Graceful degradation: if no external knowledge files exist, the skill proceeds as before — A.0/A.7 simply note "file not present".
+
 ## v1.2.1 (2026-04-07)
 
 **Self-review fixes — the skill reviewed itself and found real issues.**

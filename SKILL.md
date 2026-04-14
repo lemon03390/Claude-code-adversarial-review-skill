@@ -6,7 +6,7 @@ description: >
   "find holes", "critique this", "break this", "stress test", "poke holes",
   "what's wrong with this", "find weaknesses", "challenge this".
 metadata:
-  version: "1.2.1"
+  version: "1.3"
   sources:
     - richiethomas/claude-devils-advocate (debate mechanic)
     - posit-dev/skills/critical-code-reviewer (detection patterns, severity tiers)
@@ -21,6 +21,7 @@ metadata:
 2. Evaluate artifacts, not intent — ignore "TODO" and "will fix later"
 3. Forced disagreement — MUST challenge before conceding
 4. Concrete over abstract — every finding needs a code snippet
+5. **Compound prior learnings** — every review MUST consult `~/.claude/error-tracker.json` and `~/.claude/knowledge-base/` before generating findings (see A.0)
 
 **Anti-sycophancy test:** If the review would make the author say "yeah, I knew all that" — dig deeper.
 
@@ -162,6 +163,30 @@ These patterns apply across Steps A.1-A.4. Each step references this table — i
 
 ## Phase A: Adversarial Code Review
 
+### A.0 — Consult Prior Learnings (if available)
+
+Before reviewing, load project-specific error patterns from any external knowledge sources you have. This step makes the skill compound learnings across sessions.
+
+**Try to read (skip silently if file does not exist):**
+
+1. `~/.claude/error-tracker.json` — if present, extract patterns where `count >= 2` AND the current project is in `projects[]`. These are **codebase-specific blockers** that have bitten before.
+2. `~/.claude/knowledge-base/index.md` — if present, skim the "Solutions" and "Decisions" sections for entries tagged with the current project OR mentioning files/modules in the diff. Read up to 3 most relevant entries in full.
+3. `<project>/.claude/plpgsql-graph-report.md` — if present AND the diff touches SQL/PL-pgSQL, check **God Nodes** and **Trigger Chains** for the blast-radius of modified functions.
+4. Any project-specific `CLAUDE.md` rules already in context (these are auto-loaded).
+
+**Output a "Prior Learnings Applied" preamble before A.1**, even when nothing was found:
+
+```
+## Prior Learnings Applied
+- Error patterns in scope: [list, or "none / file not present"]
+- Relevant KB entries: [list wikilinks, or "none / file not present"]
+- Graph hits: [God Node / Trigger Chain hits, or "none / N/A"]
+```
+
+Findings during A.2–A.4 that match a loaded pattern receive **+1 confidence** and **auto-promote to Blocking severity** regardless of default tier. Cite the source: `[matches error-tracker pattern #3]` or `[matches KB: 2026-04-13_logger-sink-fallback-buffer]`.
+
+> Optional integration: This step works best with the [Knowledge Flywheel](https://github.com/lemon03390/Claude-code-adversarial-review-skill#knowledge-flywheel) pattern. If you don't have these files, the preamble simply notes "file not present" and the review proceeds normally.
+
 ### A.1 — Scope
 
 ```
@@ -257,6 +282,19 @@ Format: `Fixed: [description]` or `Needs decision: [options]`
 ### Verdict: Request Changes | Needs Discussion | Approve
 ### Re-run Recommendation
 ```
+
+### A.7 — Flywheel Feedback (if A.0 was available)
+
+If A.0 loaded any external knowledge, add a **Flywheel Feedback** block so learnings compound. Skip this step entirely if A.0 found nothing.
+
+```
+## Flywheel Feedback
+- New patterns (not in tracker): [blocker descriptions, one line each, or "none"]
+- Would-have-caught (existing KB entry that matches): [wikilinks, or "none"]
+- Archive recommended: [yes/no — yes if >= 1 new pattern or architectural insight]
+```
+
+If any blocker matches an **existing** promoted rule in your project/global `CLAUDE.md`, surface this explicitly: `⚠️ This is a promoted rule violation — why did it still slip through?` — the gap itself is valuable signal.
 
 ## Phase B: Architecture Attack
 
